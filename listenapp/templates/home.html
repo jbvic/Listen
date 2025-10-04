@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Listen</title>
+    </head>
+    <body>
+        <h1>Create New Entry</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button type="submit">Save</button>
+        </form>
+        <h2>Past Entries</h2>
+        <ul>
+            {% for entry in entries %}
+            <li>
+                <b>{{entry.time_created|date:"Y-m-d H:i"}}:</b>
+                {{entry.text}} <br>
+                Compound score: {{entry.compound}}<br>
+                Sentiment: {{entry.sentiment}}<br>
+            </li>
+            {% empty %}
+                <li>No entries yet. Try adding one now!</li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
