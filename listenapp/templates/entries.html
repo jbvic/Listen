@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Past Entries</h2>
+<ul>
+    {% for entry in entries %}
+    <li>
+        <a href="/entries/{{entry.id}}">{{entry.time_created|date:"Y-m-d H:i"}}:</a>
+        {{entry.text}} <br>
+        Compound score: {{entry.compound}}<br>
+        Sentiment: {{entry.sentiment}}<br>
+    </li>
+    {% empty %}
+    <li>No entries yet. Try adding one now!</li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,27 +1,29 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Listen</title>
-    </head>
-    <body>
-        <h1>Create New Entry</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{form.as_p}}
-            <button type="submit">Save</button>
-        </form>
-        <h2>Past Entries</h2>
-        <ul>
-            {% for entry in entries %}
-            <li>
-                <b>{{entry.time_created|date:"Y-m-d H:i"}}:</b>
-                {{entry.text}} <br>
-                Compound score: {{entry.compound}}<br>
-                Sentiment: {{entry.sentiment}}<br>
-            </li>
-            {% empty %}
-                <li>No entries yet. Try adding one now!</li>
-            {% endfor %}
-        </ul>
-    </body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    p {
+        text-align: center;
+        color: black;
+
+    }
+    
+</style>
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col text-center">
+    <h1 class="text-center">Welcome to Listen!</h1>
+    <p>Listen is a web application that allows users to journal their thoughts and creates a spotify playlist to suit the mood of their journal entry.<br>Once a journal entry is saved, a playlist will be generated for the user using sentiment analysis on what they wrote, allowing the user to listen and save the playlist to their library with a vibe that matches.</p>
+    {% if user.is_authenticated %}
+        <p class="text-center">If you'd like to logout, click the button below.</p>
+        <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">logout</button>
+</form>
+    {% else %}
+        <p>Login to start journaling now.</p>
+        <a href="{% url  'social:begin' 'spotify' %}">Connect with Spotify</a>
+    {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

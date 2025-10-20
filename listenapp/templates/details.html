@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<li>
+    <b>{{entry.time_created|date:"Y-m-d H:i"}}:</b>
+    {{entry.text}} <br>
+    Compound score: {{entry.compound}}<br>
+    Sentiment: {{entry.sentiment}}<br>
+</li>
+
+{% endblock %}

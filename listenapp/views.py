@@ -2,11 +2,22 @@ from django.shortcuts import render, redirect
 from .analysis import perform_analysis
 from .models import JournalEntry
 from .forms import JournalEntryForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from django.http import Http404
+
 
 # Create your views here.
-
-
 def home(request):
+    return render(request, "home.html")
+
+@login_required
+def listout(request):
+    entries = JournalEntry.objects.filter(user=request.user).order_by('-time_created')
+    return render(request, "entries.html", {'entries': entries})
+
+@login_required
+def create(request):
     #check if post, if post perform analysis and save entry
     if request.method == "POST":
         form = JournalEntryForm(request.POST)
@@ -28,11 +39,21 @@ def home(request):
             #set the entry fields with analysis results, then save
             entry.sentiment = sentiment
             entry.compound = compound
+            entry.user = request.user
             entry.save()
-            return redirect("home")
+            return render(request, "details.html", {"entry": entry})
     else:
         #else create new form for user to fill
         form = JournalEntryForm()
-    
-    entries = JournalEntry.objects.all().order_by('-time_created')
-    return render(request, "home.html", {'form': form, 'entries': entries})
+    return render(request, "create.html", {'form': form})
+
+def logout_user(request):
+    logout(request)
+    return redirect("home")
+
+def details(request, entry_id):
+    try:
+        entry = JournalEntry.objects.get(pk=entry_id)
+    except JournalEntry.DoesNotExist:
+        raise Http404("Question does not exist")
+    return render(request, "details.html", {"entry": entry})
