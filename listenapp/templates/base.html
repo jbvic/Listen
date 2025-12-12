@@ -7,55 +7,26 @@
     height: auto;
     width: auto;
   }
+{% if user.is_authenticated %}
 
-    {
-    % if user.is_authenticated %
-  }
+.entry,
+.comment {
+    background: linear-gradient(
+        to bottom right,
+        {{ user.profile.background_color }},
+        white
+    );
+    color: {{ user.profile.text_color }};
+}
 
-  .entry,
-  .comment {
-    background: linear-gradient(to bottom right, {
-        {
-        user.profile.background_color
-      }
-    }
-
-    , white);
-
-  color: {
-      {
-      user.profile.text_color
-    }
-  }
-
-  ;
-  }
-
-  .entry *,
-  .comment * {
-    font-family: {
-        {
-        user.profile.font
-      }
-    }
-
-    ;
-
-    color: {
-        {
-        user.profile.text_color
-      }
-    }
-
-    ;
+.entry *,
+.comment * {
+    font-family: {{ user.profile.font }};
+    color: {{ user.profile.text_color }};
     text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+}
 
-  }
-
-    {
-    % endif %
-  }
-  }
+{% endif %}
 </style>
 
 <head>
