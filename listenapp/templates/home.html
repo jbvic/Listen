@@ -1,29 +1,191 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
 <style>
     p {
-        text-align: center;
-        color: black;
-
+        font-size: 20px;
+        font-weight: bold;
     }
-    
+
+    .mySlides {
+        display: none
+    }
+
+    .slideimg {
+        width: 1200px;
+        height: 500px;
+        vertical-align: middle;
+    }
+
+    .slideshow-container {
+        max-width: 1200px;
+        position: relative;
+        margin: auto;
+    }
+
+    .prev,
+    .next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        padding: 16px;
+        margin-top: -22px;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        transition: 0.6s ease;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+    }
+
+    .next {
+        right: 0;
+        border-radius: 3px 0 0 3px;
+    }
+
+    .prev:hover,
+    .next:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .text {
+        color: #f2f2f2;
+        font-size: 15px;
+        padding: 8px 12px;
+        position: absolute;
+        bottom: 8px;
+        width: 100%;
+        text-align: center;
+        background: rgb(0, 0, 0);
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .numbertext {
+        color: #f2f2f2;
+        font-size: 12px;
+        padding: 8px 12px;
+        position: absolute;
+        top: 0;
+    }
+
+    .dot {
+        cursor: pointer;
+        height: 15px;
+        width: 15px;
+        margin: 0 2px;
+        background-color: #bbb;
+        border-radius: 50%;
+        display: inline-block;
+        transition: background-color 0.6s ease;
+    }
+
+    .active,
+    .dot:hover {
+        background-color: #717171;
+    }
+
+    .fade {
+        -webkit-animation-name: fade;
+        -webkit-animation-duration: 1.5s;
+        -webkit-animation-fill-mode: forwards;
+        animation-name: fade;
+        animation-duration: 1.5s;
+        animation-fill-mode: forwards;
+    }
+
+    @-webkit-keyframes fade {
+        from {
+            opacity: .4
+        }
+
+        to {
+            opacity: 1
+        }
+    }
+
+    @keyframes fade {
+        from {
+            opacity: .4
+        }
+
+        to {
+            opacity: 1
+        }
+    }
 </style>
-<div class="container-fluid mt-3">
-    <div class="row">
-        <div class="col text-center">
-    <h1 class="text-center">Welcome to Listen!</h1>
-    <p>Listen is a web application that allows users to journal their thoughts and creates a spotify playlist to suit the mood of their journal entry.<br>Once a journal entry is saved, a playlist will be generated for the user using sentiment analysis on what they wrote, allowing the user to listen and save the playlist to their library with a vibe that matches.</p>
-    {% if user.is_authenticated %}
-        <p class="text-center">If you'd like to logout, click the button below.</p>
-        <form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">logout</button>
-</form>
-    {% else %}
-        <p>Login to start journaling now.</p>
-        <a href="{% url  'social:begin' 'spotify' %}">Connect with Spotify</a>
-    {% endif %}
+<div class="slideshow-container">
+
+    <div class="mySlides fade">
+        <div class="numbertext">1 / 3</div>
+        <img class="slideimg" img src="{% static 'logo.png' %}" alt="Listen" style="width:100%">
+        <div class="text">Welcome to Listen! Listen is a web application that allows users to journal their thoughts and
+            creates a spotify playlist to suit the mood of their journal entry.</div>
+    </div>
+
+    <div class="mySlides fade">
+        <div class="numbertext">2 / 3</div>
+        <img class="slideimg" img src="{% static 'Example_journal.png' %}" alt="Journal Entry Details Page"
+            style="width:100%">
+        <div class="text">Once you save your journal entry, you will be redirected to a details page that includes your
+            journal entry and spotify playlist!
         </div>
     </div>
+
+    <div class="mySlides fade">
+        <div class="numbertext">3 / 3</div>
+        <img class="slideimg" img src="{% static 'comments_example.png' %}" alt="Comment Section" style="width:100%">
+        <div class="text">If you make your journal entry public you will automatically have a comment section. Connect
+            with others and reply to their comments!
+        </div>
+    </div>
+    <a class="prev" onclick="plusSlides(-1)">❮</a>
+    <a class="next" onclick="plusSlides(1)">❯</a>
 </div>
+<div style="text-align:center">
+    <span class="dot" onclick="currentSlide(1)"></span>
+    <span class="dot" onclick="currentSlide(2)"></span>
+    <span class="dot" onclick="currentSlide(3)"></span>
+</div>
+{% if user.is_authenticated %}
+
+<p class="text-center font-weight-bold">If you'd like to logout, click the button below.</p>
+<div class="d-flex justify-content-center">
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-lg">Logout</button>
+    </form>
+</div>
+
+{% else %}
+<p class="text-center my-3">Login through Spotify to get started!</p>
+<div class="d-flex justify-content-center">
+    <a href="{% url 'social:begin' 'spotify' %}" class="btn btn-success btn-lg">Connect With Spotify</a>
+</div>
+{% endif %}
+<script>
+    let slideIndex = 1;
+    showSlides(slideIndex);
+    function plusSlides(n) {
+        showSlides(slideIndex += n);
+    }
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+    function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName("mySlides");
+        let dots = document.getElementsByClassName("dot");
+        if (n > slides.length) { slideIndex = 1 }
+        if (n < 1) { slideIndex = slides.length }
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[slideIndex - 1].style.display = "block";
+        dots[slideIndex - 1].className += " active";
+    }
+</script>
 {% endblock %}

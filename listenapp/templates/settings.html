@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="column border-2">
+        <h2 class="mt-3">Settings Page</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-outline-secondary" type="submit">Save</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

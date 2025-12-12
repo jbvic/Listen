@@ -1,0 +1,56 @@
+{% load static %}
+<style>
+    textarea,
+    input[type="text"] {
+        width: 80%;
+        height: 100%;
+    }
+</style>
+<div class="comment p-3">
+    <li class="list-group-item border-2 m-1">
+        <div class="d-flex align-items-center mb-2">
+            {% if comment.user.profile.profile_pic_url %}
+            <img src="{{comment.user.profile.profile_pic_url}}" alt="profile_pic" class="rounded-circle me-2" width="40"
+                height="40">
+            {% else %}
+            <img src="{% static 'default_profile.jpg' %}" alt="profile_pic" class="rounded-circle me-2" width="40"
+                height="40">
+            {% endif %}
+            <strong>{{ comment.user.profile.name }}</strong>
+            <p class="fw-lighter ms-auto text-end" style="font-size: 14px;">Created: {{comment.time_created}}</p>
+        </div>
+        <p>{{comment.text}}</p>
+        {% if user.is_authenticated and user == comment.user %}
+        <a class="d-flex flex-row-reverse" href="{% url 'comment_delete' comment.id %}">Delete Comment</a>
+        {% endif %}
+    </li>
+    <h5>Replies to {{ comment.user.profile.name }}'s comment</h5>
+    {% for reply in replies %}
+    <li class="list-group-item border-2 m-1">
+        <div class="border-2 mx-1 my-2">
+            <div class="d-flex align-items-center mb-2">
+                {% if reply.user.profile.profile_pic_url %}
+                <img src="{{reply.user.profile.profile_pic_url}}" alt="profile_pic" class="rounded-circle me-2"
+                    width="40" height="40">
+                {% else %}
+                <img src="{% static 'default_profile.jpg' %}" alt="profile_pic" class="rounded-circle me-2" width="40"
+                    height="40">
+                {% endif %}
+                <strong>{{ reply.user.profile.name }}</strong>
+                <p class="fw-lighter ms-auto text-end" style="font-size: 14px;">Created: {{reply.time_created}}</p>
+            </div>
+            <p>{{reply.text}}</p>
+            {% if user.is_authenticated and user == reply.user %}
+            <a class="d-flex flex-row-reverse" href="{% url 'reply_delete' reply.id %}">Delete Reply</a>
+            {% endif %}
+        </div>
+    </li>
+    {% endfor %}
+    <form method="post" action="{% url 'reply_create' comment.id %}" class="my-3">
+        {% csrf_token %}
+        <div class="input-group">
+            {{ replyform.text }}
+            <button class="btn btn-outline-secondary btn-sm">Reply</button>
+        </div>
+    </form>
+</div>

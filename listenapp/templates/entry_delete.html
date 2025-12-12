@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="container">
+    <h4 class="m-3 text-center">Are you sure you want to delete the following journal entry?:</h4>
+    <div class="entry p-4 h-100 rounded shadow">
+        <h4 class="m-2">{{entry.title}}</h4>
+        <div class="d-flex align-items-center">
+            <div class="me-2">
+                {% if entry.user.profile.profile_pic_url %}
+                <img src="{{entry.user.profile.profile_pic_url}}" alt="profile_pic" class="rounded-circle" width="50"
+                    height="50">
+                {% else %}
+                <img src="{% static 'default_profile.jpg' %}" alt="profile_pic" class="rounded-circle" width="50"
+                    height="50">
+                {% endif %}
+            </div>
+            <div>
+                <h6 class="my-1">Created by {{entry.user.profile.name}}</h6>
+                <h6>{{entry.time_created|date:"Y-m-d H:i"}}</h6>
+            </div>
+        </div>
+
+        <p class="my-1">{{entry.text}}</p>
+        {% if entry.sentiment == "negative" %}
+        <span class="badge bg-danger">Compound score: {{entry.compound}}</span>
+        <span class="badge bg-danger">Sentiment: {{entry.sentiment}}</span>
+        {% elif entry.sentiment == "positive" %}
+        <span class="badge bg-success">Compound score: {{entry.compound}}</span>
+        <span class="badge bg-success">Sentiment: {{entry.sentiment}}</span>
+        {% else %}
+        <span class="badge bg-warning">Compound score: {{entry.compound}}</span>
+        <span class="badge bg-warning">Sentiment: {{entry.sentiment}}</span>
+        {% endif %}
+    </div>
+    <form method="post" class="d-flex justify-content-end">
+        {% csrf_token %}
+        <button class="my-3 me-3" href="{{ request.META.HTTP_REFERER }}">Go Back</a>
+            <button type="submit" class="my-3">Confirm</button>
+    </form>
+</div>
+
+
+{% endblock %}

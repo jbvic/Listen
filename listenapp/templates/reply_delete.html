@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+    <h4 class="m-3 text-center">Are you sure you want to delete the following reply?:</h4>
+    <div class="comment p-4 rounded shadow">
+        <li class="list-group-item border-2 m-1">
+            <div class="d-flex align-items-center mb-2">
+                {% if reply.user.profile.profile_pic_url %}
+                <img src="{{reply.user.profile.profile_pic_url}}" alt="profile_pic" class="rounded-circle me-2"
+                    width="40" height="40">
+                {% else %}
+                <img src="{% static 'default_profile.jpg' %}" alt="profile_pic" class="rounded-circle me-2" width="40"
+                    height="40">
+                {% endif %}
+                <strong>{{ reply.user.profile.name }}</strong>
+                <p class="fw-lighter ms-auto text-end" style="font-size: 14px;">Created:
+                    {{reply.time_created}}</p>
+            </div>
+            <p>{{reply.text}}</p>
+        </li>
+
+        <form method="post" class="d-flex justify-content-end">
+            {% csrf_token %}
+            <button class="my-3 me-3" href="{{ request.META.HTTP_REFERER }}">Go Back</a>
+                <button type="submit" class="my-3">Confirm</button>
+        </form>
+    </div>
+
+
+    {% endblock %}

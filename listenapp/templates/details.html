@@ -1,11 +1,131 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
-<li>
-    <b>{{entry.time_created|date:"Y-m-d H:i"}}:</b>
-    {{entry.text}} <br>
-    Compound score: {{entry.compound}}<br>
-    Sentiment: {{entry.sentiment}}<br>
-</li>
+<div class="page_bg container my-3">
+    <div class="row g-4">
+        <div class="col-6">
+            <div class="entry p-4 h-100 rounded shadow">
+                <h4 class="m-2">{{entry.title}}</h4>
+                <div class="d-flex align-items-center">
+                    <div class="me-2">
+                        {% if entry.user.profile.profile_pic_url %}
+                        <img src="{{entry.user.profile.profile_pic_url}}" alt="profile_pic" class="rounded-circle"
+                            width="50" height="50">
+                        {% else %}
+                        <img src="{% static 'default_profile.jpg' %}" alt="profile_pic" class="rounded-circle"
+                            width="50" height="50">
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h6 class="my-1">Created by {{entry.user.profile.name}}</h6>
+                        <h6>{{entry.time_created|date:"Y-m-d H:i"}}</h6>
+                    </div>
+                </div>
 
+                <p class="my-1">{{entry.text}}</p>
+                {% if entry.sentiment == "negative" %}
+                <span class="badge bg-danger">Compound score: {{entry.compound}}</span>
+                <span class="badge bg-danger">Sentiment: {{entry.sentiment}}</span>
+                {% elif entry.sentiment == "positive" %}
+                <span class="badge bg-success">Compound score: {{entry.compound}}</span>
+                <span class="badge bg-success">Sentiment: {{entry.sentiment}}</span>
+                {% else %}
+                <span class="badge bg-warning">Compound score: {{entry.compound}}</span>
+                <span class="badge bg-warning">Sentiment: {{entry.sentiment}}</span>
+                {% endif %}
+            </div>
+
+        </div>
+        <div class="col-6">
+            {% if entry.playlist_id %}
+            <iframe data-testid="embed-iframe" style="border-radius:12px"
+                src="https://open.spotify.com/embed/playlist/{{entry.playlist_id}}?utm_source=generator"
+                class="w-100 h-100" frameBorder="0" allowfullscreen=""
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"></iframe>
+            {% else %}
+            <p>No playlist id was found. No playlist was generated for this journal entry.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row g-4 mt-1">
+        <div class="col-6">
+            <div class="comment p-4 rounded shadow">
+                {% if entry.public %}
+                <h4>Comments</h4>
+                <form method="post" action="{% url 'comment_create' entry.id %}" class="my-3">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        {{ commentform.text }}
+                        <button class="btn btn-outline-secondary btn-sm">Comment</button>
+                    </div>
+                </form>
+                <ul class="list-group">
+                    {% for comment in entry.comments.all %}
+                    <li class="list-group-item border-2 m-1">
+                        <div class="d-flex align-items-center mb-2">
+                            {% if comment.user.profile.profile_pic_url %}
+                            <img src="{{comment.user.profile.profile_pic_url}}" alt="profile_pic"
+                                class="rounded-circle me-2" width="40" height="40">
+                            {% else %}
+                            <img src="{% static 'default_profile.jpg' %}" alt="profile_pic" class="rounded-circle me-2"
+                                width="40" height="40">
+                            {% endif %}
+                            <strong>{{ comment.user.profile.name }}</strong>
+                            <p class="fw-lighter ms-auto text-end" style="font-size: 14px;">Created:
+                                {{comment.time_created}}</p>
+                        </div>
+                        <p>{{comment.text}}</p>
+                        {% if comment.replies.count > 0 %}
+                        <button class="btn btn-sm btn-outline-secondary" onclick="loadReplies({{ comment.id }})">View
+                            Replies</button>
+                        {% endif %}
+                        {% if user.is_authenticated and user == comment.user %}
+                        <a class="d-flex flex-row-reverse" href="{% url 'comment_delete' comment.id %}">Delete
+                            Comment</a>
+                        {% endif %}
+                    </li>
+                    <form method="post" action="{% url 'reply_create' comment.id %}" class="my-3">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            {{ replyform.text }}
+                            <button class="btn btn-outline-secondary btn-sm">Reply</button>
+                        </div>
+
+
+
+                    </form>
+                    </form>
+                    {% endfor %}
+                </ul>
+
+                {% else %}
+                Only public entries can have comments.
+                {% endif %}
+            </div>
+
+        </div>
+        <div class="col-6">
+            <div id="reply_panel" class="comment p-4 rounded shadow">
+                <p class="text-muted">Select 'View Replies' to open a comment thread.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function loadReplies(commentID) {
+        const panel = document.getElementById("reply_panel");
+        panel.innerHTML = "<p class='text-muted'>Loading...</p>";
+        fetch(`/open_reply_thread/${commentID}`)
+            .then(res => res.text())
+            .then(html => {
+                panel.innerHTML = html;
+            })
+            .catch(err => {
+                panel.innerHTML = "<p class='text-danger'>Error</p>";
+            });
+    }
+</script>
 {% endblock %}
