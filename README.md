@@ -7,6 +7,6 @@ Journal entries can be made public and viewable through a discovery page that is
 # Installation
 1. Clone the repository.
 2. Install the requirements using: 
-```pip install -r requirements.```
+```pip install -r requirements.txt```
 3. Create a Spotify app in the Spotify Developer Dashboard with Web API option.
 4. Change client and secret id in settings.py to the one's in your spotify dashboard.
