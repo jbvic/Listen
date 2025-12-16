@@ -4,7 +4,7 @@ Listen is a web application that allows users to journal their thoughts and crea
 Journal entries can be made public and viewable through a discovery page that is sorted by the user's last compound score. Along with being able to view other people’s journal entries, you can comment on their entries and listen and save their generated spotify playlist to your own spotify library.
 
 
-# Instalation
+# Installation
 1. Clone the repository.
 2. Install the requirements using: 
 ```pip install -r requirements.```
